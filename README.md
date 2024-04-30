@@ -6,4 +6,4 @@
 
 # Демо
 
-https://snack.expo.dev/@plamyaa/868223
+https://snack.expo.dev/@plamyaa/weatherapp
