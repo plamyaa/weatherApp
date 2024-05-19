@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Image, Modal, TouchableOpacity } from 'react-native';
 import * as Location from 'expo-location';
 import { fetchWeatherData } from '../api';
 import humidityIcon from '../assets/humidity.png';
 import temperatureIcon from '../assets/temperature.png';
 import windIcon from '../assets/wind.png';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation, route }) => {
   const [location, setLocation] = useState(null); // Состояние для хранения текущей геолокации
   const [loading, setLoading] = useState(true); // Состояние для отображения индикатора загрузки
   const [weatherData, setWeatherData] = useState(null); // Состояние для хранения данных о погоде
   const [weatherIconName, setWeatherIconName] = useState(null); // Состояние для хранения имени иконки погоды
   const [greeting, setGreeting] = useState(''); // Состояние для приветствия
+  const [showErrorModal, setShowErrorModal] = useState(false);
+
+  useEffect(() => {
+    if (route.params?.error) {
+      setShowErrorModal(true);
+    }
+  }, [route.params]);
 
   // Функция для получения текущей геолокации пользователя
   const getLocation = async () => {
@@ -134,6 +141,23 @@ const HomeScreen = () => {
           </View>
         </View>
       )}
+      <Modal
+        visible={showErrorModal}
+        transparent={true}
+        onRequestClose={() => setShowErrorModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>City not found.</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setShowErrorModal(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -179,6 +203,31 @@ const styles = StyleSheet.create({
   weatherDetailedIcon: {
     width: 20,
     height: 20,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 

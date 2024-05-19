@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Image, Platform } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { fetchWeatherDataByCity } from '../api';
 import humidityIcon from '../assets/humidity.png';
 import temperatureIcon from '../assets/temperature.png';
 import windIcon from '../assets/wind.png';
 
 const WeatherScreen = ({ route }) => {
+  const navigation = useNavigation();
   const { city } = route.params;
   const [loading, setLoading] = useState(true);
   const [weatherData, setWeatherData] = useState(null);
@@ -20,6 +22,7 @@ const WeatherScreen = ({ route }) => {
       setLoading(false);
     } catch (error) {
       console.error('Ошибка загрузки данных о погоде:', error);
+      navigation.navigate('Home', { error: 'City not found' });
     }
   };
 
@@ -99,7 +102,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    ...Platform.select({
+      ios: {
+        backgroundColor: '#fff',
+      },
+      android: {
+        backgroundColor: '#eee',
+      },
+      default: {
+        // web
+        backgroundColor: '#ddd',
+      },
+    }),
   },
   greeting: {
     fontSize: 20,
